@@ -2,9 +2,18 @@
   <head>
     <title>Kid List</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/css/materialize.min.css">
+
+    <script>window.$ = window.jQuery = require('jquery');</script>
+    <script type="text/javascript" src="scripts.js"></script>
   </head>
   <body>
-    <script>
-      </script>
+    <div class="container">
+      <div style="width: 50%">
+        <form>
+          <input type="number" min="1" id="count" placeholder="How many images of each child?" />
+        </form>
+      </div>
+      <button class="btn" id="submit">Submit</button>
+    </div>
   </body>
 </html>

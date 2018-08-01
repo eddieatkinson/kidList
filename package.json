@@ -9,6 +9,7 @@
   "author": "Eddie Atkinson",
   "license": "MIT",
   "dependencies": {
-    "electron": "^2.0.5"
+    "electron": "^2.0.5",
+    "jquery": "^3.3.1"
   }
 }
