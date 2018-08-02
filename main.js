@@ -2,9 +2,10 @@ const electron = require('electron');
 const url = require('url');
 const path = require('path');
 
-const { app, BrowserWindow, Menu } = electron;
+const { app, BrowserWindow, Menu, ipcMain } = electron;
 
 let win;
+let countInput
 
 app.on('ready', function() {
   win = new BrowserWindow({});
@@ -16,4 +17,8 @@ app.on('ready', function() {
   win.on('closed', function() {
     app.quit();
   });
+});
+
+ipcMain.on('count:add', function(e, information) {
+  console.log(information);
 });
