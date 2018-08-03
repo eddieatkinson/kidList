@@ -8,7 +8,7 @@ const fullFileNameArray = [];
 let fileLocation;
 
 function getNames(fileArray) {
-  // console.log(fileArray);
+  
   const nameArray = map(fileArray, (file) => {
     const fileNameWithExtension = getNameWithExtension(file);
     fullFileNameArray.push(fileNameWithExtension);
@@ -21,23 +21,21 @@ function getNames(fileArray) {
 
 function getNameWithExtension(wholeFileName) {
   const wholeFileNameArray = wholeFileName.split('/');
-  // const lastElement = wholeFileNameArray.length - 1;
-  // console.log(wholeFileNameArray);
   const fileNameWithExtension = wholeFileNameArray.pop();
-  // console.log(wholeFileNameArray);
-  // console.log(wholeFileNameArray.join('/'));
+  
+  
   fileLocation = wholeFileNameArray.join('/');
-  // console.log(fileNameWithExtension);
+  
   return fileNameWithExtension;
 }
 
 function removeExtension(fileName) {
-  const nameWithoutExtension = fileName.replace(/\.[^/.]+$/, "");
+  const nameWithoutExtension = fileName.replace(/\.[^/.]+$/, '');
   return nameWithoutExtension;
 }
 
 function removeJPEGNumber(fileName) {
-  const justName = fileName.replace(/\-.+/, ""); // Remove anything after the first dash encaountered
+  const justName = fileName.replace(/\-.+/, ''); // Remove anything after the first dash encaountered
   return justName;
 }
 
@@ -86,52 +84,85 @@ function createSpreadsheet(commaSeparatedClassArray) {
   return spreadsheetContent;
 }
 
+function createGroupArray(countArray) {
+  let groupNumber = 1;
+  const groupArray = [];
+  forEach(countArray, (count) => {
+    for (let i = 0; i < count; i++) {
+      groupArray.push(groupNumber);
+    }
+    groupNumber++;
+  });
+  return groupArray;
+}
+
+function createImageData(nameArray, groupArray, date, school) {
+  let imageDataContent = `Filename,FirstName,LastName,FullName,GroupTest,Class,Packages,ShootDate,SchoolName\n`;
+  forEach(fullFileNameArray, (name, index) => {
+    const nameInformation = separateNameAndClass(nameArray[index]);
+    const className = nameInformation[0];
+    const nameOnly = nameInformation[1];
+    imageDataContent += `${name},${nameOnly},,${nameOnly},${groupArray[index]},${className},,${date},${school}\n`;
+  });
+  return imageDataContent;
+}
+
+function separateNameAndClass(fileName) {
+  const fileNameArray = fileName.split(' ');
+  const className = fileNameArray.shift();
+  const nameOnly = fileNameArray.join(' ');
+  return [className, nameOnly];
+}
+
 $(document).ready(() => {
   let uniqueNameArray = [];
   let countArray;
+  let nameArray;
   $('#readFiles').click(() => {
     dialog.showOpenDialog({ properties: [
         'openFile', 'multiSelections',
       ]}, (fileNames) => {
-          const nameArray = getNames(fileNames);
+          nameArray = getNames(fileNames);
           uniqueNameArray = uniq(nameArray);
           countArray = getCount(nameArray, uniqueNameArray);
-          // console.log(uniqueNameArray);
-          // console.log(countArray);
+          
+          
         });
   });
-  $("#submit").click(() => {
-    const file = $("#file").val();
-    const count = $("#count").val();
-    const school = $("#school").val();
-    const date = $("#date").val();
-    const information = {
-      file,
-      count,
-      school,
-      date,
-    };
+  $('#submit').click(() => {
+    const count = $('#count').val();
+    const school = $('#school').val();
+    const date = $('#date').val();
+    
     if (isEmpty(uniqueNameArray)) {
-      alert("Please select files");
+      alert('Please select files');
     } else if (!count || !school || !date) {
-      alert("All fields are required");
+      alert('All fields are required');
     } else {
-      console.log(fullFileNameArray);
-      console.log(fileLocation);
-      // console.log(information);
       const filesWithMultiples = addMultiples(count, uniqueNameArray, countArray);
-      // console.log(filesWithMultiples);
       const commaSeparatedClassArray = separateClassWithComma(filesWithMultiples);
-      // console.log(commaSeparatedClassArray);
+      
+      const filePath = `${fileLocation}/${school}`;
       const spreadsheetContent = createSpreadsheet(commaSeparatedClassArray);
-      ipcRenderer.send('count:add', information);
-      fs.writeFile(`${fileLocation}/${school}.csv`, spreadsheetContent, (error) => {
+      fs.writeFile(`${filePath}.csv`, spreadsheetContent, (error) => {
         if(error) {
           alert(`An error occured: ${error.message}`);
         } else {
           alert('File successfully created!');
         }
       });
+
+      const includeImageData = $('#imageData:checked').val();
+
+      if (includeImageData) {
+        const groupArray = createGroupArray(countArray);
+        const imageDataContent = createImageData(nameArray, groupArray, date, school);
+        fs.writeFile(`${filePath}.txt`, imageDataContent, (error) => {
+          if (error) {
+            alert(`An error occured when creating image data file: ${error.message}`);
+          }
+        })
+      }
     }
   });
 });
