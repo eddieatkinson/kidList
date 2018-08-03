@@ -4,10 +4,14 @@ const { ipcRenderer } = electron;
 const { dialog } = electron.remote; // Load remote compnent that contains the dialog dependency
 const fs = require('fs'); // Load the File System to execute our common tasks (CRUD)
 
+const fullFileNameArray = [];
+let fileLocation;
+
 function getNames(fileArray) {
-  console.log(fileArray);
+  // console.log(fileArray);
   const nameArray = map(fileArray, (file) => {
     const fileNameWithExtension = getNameWithExtension(file);
+    fullFileNameArray.push(fileNameWithExtension);
     const nameWithoutExtension = removeExtension(fileNameWithExtension);
     const justName = removeJPEGNumber(nameWithoutExtension);
     return justName;
@@ -17,8 +21,13 @@ function getNames(fileArray) {
 
 function getNameWithExtension(wholeFileName) {
   const wholeFileNameArray = wholeFileName.split('/');
-  const lastElement = wholeFileNameArray.length - 1;
-  const fileNameWithExtension = wholeFileNameArray[lastElement];
+  // const lastElement = wholeFileNameArray.length - 1;
+  // console.log(wholeFileNameArray);
+  const fileNameWithExtension = wholeFileNameArray.pop();
+  // console.log(wholeFileNameArray);
+  // console.log(wholeFileNameArray.join('/'));
+  fileLocation = wholeFileNameArray.join('/');
+  // console.log(fileNameWithExtension);
   return fileNameWithExtension;
 }
 
@@ -72,6 +81,11 @@ function separateClassWithComma(filesWithMultiples) {
   return commaSeparatedClassArray;
 }
 
+function createSpreadsheet(commaSeparatedClassArray) {
+  const spreadsheetContent = commaSeparatedClassArray.join('\n');
+  return spreadsheetContent;
+}
+
 $(document).ready(() => {
   let uniqueNameArray = [];
   let countArray;
@@ -82,8 +96,8 @@ $(document).ready(() => {
           const nameArray = getNames(fileNames);
           uniqueNameArray = uniq(nameArray);
           countArray = getCount(nameArray, uniqueNameArray);
-          console.log(uniqueNameArray);
-          console.log(countArray);
+          // console.log(uniqueNameArray);
+          // console.log(countArray);
         });
   });
   $("#submit").click(() => {
@@ -102,12 +116,22 @@ $(document).ready(() => {
     } else if (!count || !school || !date) {
       alert("All fields are required");
     } else {
-      console.log(information);
+      console.log(fullFileNameArray);
+      console.log(fileLocation);
+      // console.log(information);
       const filesWithMultiples = addMultiples(count, uniqueNameArray, countArray);
-      console.log(filesWithMultiples);
+      // console.log(filesWithMultiples);
       const commaSeparatedClassArray = separateClassWithComma(filesWithMultiples);
-      console.log(commaSeparatedClassArray);
+      // console.log(commaSeparatedClassArray);
+      const spreadsheetContent = createSpreadsheet(commaSeparatedClassArray);
       ipcRenderer.send('count:add', information);
+      fs.writeFile(`${fileLocation}/${school}.csv`, spreadsheetContent, (error) => {
+        if(error) {
+          alert(`An error occured: ${error.message}`);
+        } else {
+          alert('File successfully created!');
+        }
+      });
     }
   });
 });
