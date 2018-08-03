@@ -80,7 +80,7 @@ function separateClassWithComma(filesWithMultiples) {
 }
 
 function createSpreadsheet(commaSeparatedClassArray) {
-  const spreadsheetContent = commaSeparatedClassArray.join('\n');
+  const spreadsheetContent = commaSeparatedClassArray.join('\r\n');
   return spreadsheetContent;
 }
 
@@ -97,12 +97,12 @@ function createGroupArray(countArray) {
 }
 
 function createImageData(nameArray, groupArray, date, school) {
-  let imageDataContent = `Filename,FirstName,LastName,FullName,GroupTest,Class,Packages,ShootDate,SchoolName\n`;
+  let imageDataContent = `Filename,FirstName,LastName,FullName,GroupTest,Class,Packages,ShootDate,SchoolName\r\n`;
   forEach(fullFileNameArray, (name, index) => {
     const nameInformation = separateNameAndClass(nameArray[index]);
     const className = nameInformation[0];
     const nameOnly = nameInformation[1];
-    imageDataContent += `${name},${nameOnly},,${nameOnly},${groupArray[index]},${className},,${date},${school}\n`;
+    imageDataContent += `${name},${nameOnly},,${nameOnly},${groupArray[index]},${className},,${date},${school}\r\n`;
   });
   return imageDataContent;
 }
