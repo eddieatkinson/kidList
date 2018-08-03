@@ -97,7 +97,9 @@ $(document).ready(() => {
       school,
       date,
     };
-    if (isEmpty(uniqueNameArray) || !count || !school || !date) {
+    if (isEmpty(uniqueNameArray)) {
+      alert("Please select files");
+    } else if (!count || !school || !date) {
       alert("All fields are required");
     } else {
       console.log(information);
