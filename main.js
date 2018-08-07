@@ -17,8 +17,38 @@ app.on('ready', function() {
   win.on('closed', function() {
     app.quit();
   });
+  // Build menu from template
+  const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
+  //Insert menu
+  Menu.setApplicationMenu(mainMenu);
 });
 
 ipcMain.on('count:add', function(e, information) {
   console.log(information);
 });
+
+const mainMenuTemplate = [
+  {
+    label: 'File',
+    submenu: [
+      {
+        label: 'Quit',
+        accelerator: process.platform == 'darwin' ? 'Command+Q' : 'Ctrl+Q',
+        click() {
+          app.quit();
+        },
+      },
+    ]
+  },
+  {
+    label: 'Help',
+    submenu: [
+      {
+        label: 'File Name Requirements',
+        click() {
+          console.log('File name requirements');
+        }
+      }
+    ]
+  }
+]
