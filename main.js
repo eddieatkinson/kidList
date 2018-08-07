@@ -5,7 +5,7 @@ const path = require('path');
 const { app, BrowserWindow, Menu, ipcMain } = electron;
 
 let win;
-let countInput
+let addWindow;
 
 app.on('ready', function() {
   win = new BrowserWindow({ width: 800, height: 500 });
@@ -22,6 +22,22 @@ app.on('ready', function() {
   //Insert menu
   Menu.setApplicationMenu(mainMenu);
 });
+
+function displayFileNameRequirements() {
+  addWindow = new BrowserWindow({
+    width: 436,
+    height: 200,
+    title: 'File Name Requirements',
+  });
+  addWindow.loadURL(url.format({
+    pathname: path.join(__dirname, 'fileNameRequirements.html'),
+    protocol: 'file:',
+    slashes: true,
+  }));
+  addWindow.on('close', function() {
+    addWindow = null;
+  });
+}
 
 ipcMain.on('count:add', function(e, information) {
   console.log(information);
@@ -46,9 +62,28 @@ const mainMenuTemplate = [
       {
         label: 'File Name Requirements',
         click() {
-          console.log('File name requirements');
+          displayFileNameRequirements();
         }
       }
     ]
   }
 ]
+
+// Add developer tools item if not in production
+if (process.env.NODE_ENV !== 'production') {
+  mainMenuTemplate.push({
+    label: 'Developer Tools',
+    submenu: [
+      {
+        label: 'Toggle DevTools',
+        accelerator: process.platform == 'darwin' ? 'Command+I' : 'Ctrl+I',
+        click(item, focusedWindow) {
+          focusedWindow.toggleDevTools();
+        }
+      },
+      {
+        role: 'reload',
+      },
+    ]
+  })
+}
