@@ -8,7 +8,7 @@ let win;
 let countInput
 
 app.on('ready', function() {
-  win = new BrowserWindow({});
+  win = new BrowserWindow({ width: 800, height: 500 });
   win.loadURL(url.format({
     pathname: path.join(__dirname, 'index.html'),
     protocol: 'file:',

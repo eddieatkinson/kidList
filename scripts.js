@@ -3,6 +3,7 @@ const { map, forEach, uniq, isEmpty } = require('lodash');
 const { ipcRenderer } = electron;
 const { dialog } = electron.remote; // Load remote compnent that contains the dialog dependency
 const fs = require('fs'); // Load the File System to execute our common tasks (CRUD)
+const storage = require('electron-json-storage');
 
 const fullFileNameArray = [];
 let fileLocation;
@@ -118,6 +119,26 @@ $(document).ready(() => {
   let uniqueNameArray = [];
   let countArray;
   let nameArray;
+  const formContent = $('.form');
+  const formHTML = `
+    <div>
+      <form>
+        <!-- <input id="file" type="file" multiple /> -->
+        <input class="btn-small" id="readFiles" type="button" value="Select files" />
+        <input id="count" type="number" min="1" placeholder="How many images of each child?" />
+        <input id="school" type="text" placeholder="School name" />
+        <input id="date" type="date" placeholder="Date shot" />
+        <label>
+          <input id="imageData" type="checkbox" />
+          <span>Check here if you'd like an image data file.</span>
+        </label>
+      </form>
+    </div>
+    <button class="btn-large" id="submit">Create List!</button>
+  `;
+  $('#acceptGuidelines').click(() => {
+    formContent.html(formHTML);
+  });
   $('#readFiles').click(() => {
     dialog.showOpenDialog({ properties: [
         'openFile', 'multiSelections',
