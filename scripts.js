@@ -3,13 +3,13 @@ const { map, forEach, uniq, isEmpty } = require('lodash');
 const { ipcRenderer } = electron;
 const { dialog } = electron.remote; // Load remote compnent that contains the dialog dependency
 const fs = require('fs'); // Load the File System to execute our common tasks (CRUD)
-const storage = require('electron-json-storage');
+const Store = require('electron-store');
+const store = new Store();
 
 const fullFileNameArray = [];
 let fileLocation;
 
 function getNames(fileArray) {
-  
   const nameArray = map(fileArray, (file) => {
     const fileNameWithExtension = getNameWithExtension(file);
     fullFileNameArray.push(fileNameWithExtension);
@@ -23,7 +23,6 @@ function getNames(fileArray) {
 function getNameWithExtension(wholeFileName) {
   const wholeFileNameArray = wholeFileName.split('/');
   const fileNameWithExtension = wholeFileNameArray.pop();
-  
   
   fileLocation = wholeFileNameArray.join('/');
   
@@ -108,6 +107,15 @@ function createImageData(nameArray, groupArray, date, school) {
   return imageDataContent;
 }
 
+function setNoShowRequirements() {
+  store.set('doNotShow', true);
+}
+
+function checkForNoShowRequirements() {
+  const doNotShow = store.get('doNotShow');
+  return doNotShow;
+}
+
 function separateNameAndClass(fileName) {
   const fileNameArray = fileName.split(' ');
   const className = fileNameArray.shift();
@@ -136,7 +144,15 @@ $(document).ready(() => {
     </div>
     <button class="btn-large" id="submit">Create List!</button>
   `;
+  const noShowRequirements = checkForNoShowRequirements();
+  if (noShowRequirements) {
+    formContent.html(formHTML);
+  }
   $('#acceptGuidelines').click(() => {
+    const doNotShow = $('#doNotShow:checked').val();
+    if (doNotShow) {
+      setNoShowRequirements();
+    }
     formContent.html(formHTML);
   });
   $('#readFiles').click(() => {
@@ -146,8 +162,6 @@ $(document).ready(() => {
           nameArray = getNames(fileNames);
           uniqueNameArray = uniq(nameArray);
           countArray = getCount(nameArray, uniqueNameArray);
-          
-          
         });
   });
   $('#submit').click(() => {
