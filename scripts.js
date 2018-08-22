@@ -123,6 +123,12 @@ function separateNameAndClass(fileName) {
   return [className, nameOnly];
 }
 
+function getFolderName(fileLocation) {
+  const fileLocationArray = fileLocation.split('/');
+  const folderName = fileLocationArray.pop();
+  return folderName;
+}
+
 $(document).ready(() => {
   let uniqueNameArray = [];
   let countArray;
@@ -135,6 +141,7 @@ $(document).ready(() => {
         <input class="btn-small" id="readFiles" type="button" value="Select files" />
         <input id="count" type="number" min="1" placeholder="How many images of each child?" />
         <input id="school" type="text" placeholder="School name" />
+        <label for="date">Date shot</label>
         <input id="date" type="date" placeholder="Date shot" />
         <label>
           <input id="imageData" type="checkbox" />
@@ -179,15 +186,21 @@ $(document).ready(() => {
       
       const filePath = `${fileLocation}/${school}`;
       const spreadsheetContent = createSpreadsheet(commaSeparatedClassArray);
+      const folderName = getFolderName(fileLocation);
+      const includeImageData = $('#imageData:checked').val();
+
+      const plural = includeImageData ? 's' : '';
+
+      const fileNames = includeImageData ? `"${school}.csv" and "${school}.txt"` : `"${school}.csv"`;
+
       fs.writeFile(`${filePath}.csv`, spreadsheetContent, (error) => {
         if(error) {
           alert(`An error occured: ${error.message}`);
         } else {
-          alert('File successfully created!');
+          alert(`File successfully created!\nCheck for file${plural} named ${fileNames} in folder "${folderName}".`);
         }
       });
 
-      const includeImageData = $('#imageData:checked').val();
 
       if (includeImageData) {
         const groupArray = createGroupArray(countArray);
