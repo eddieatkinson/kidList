@@ -87,7 +87,3 @@ if (process.env.NODE_ENV !== 'production') {
     ]
   })
 }
-
-if (process.platform === 'darwin') {
-  mainMenuTemplate.unshift({});
-}
