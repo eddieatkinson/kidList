@@ -8,6 +8,7 @@ const store = new Store();
 
 const fullFileNameArray = [];
 let fileLocation;
+const slash = process.platform == 'win32' ? '\\' : '/';
 
 function getNames(fileArray) {
   const nameArray = map(fileArray, (file) => {
@@ -21,16 +22,16 @@ function getNames(fileArray) {
 }
 
 function getNameWithExtension(wholeFileName) {
-  const wholeFileNameArray = wholeFileName.split('/');
+  const wholeFileNameArray = wholeFileName.split(slash);
   const fileNameWithExtension = wholeFileNameArray.pop();
   
-  fileLocation = wholeFileNameArray.join('/');
+  fileLocation = wholeFileNameArray.join(slash);
   
   return fileNameWithExtension;
 }
 
 function removeExtension(fileName) {
-  const nameWithoutExtension = fileName.replace(/\.[^/.]+$/, '');
+  const nameWithoutExtension = fileName.replace(/\.[^slash.]+$/, '');
   return nameWithoutExtension;
 }
 
@@ -124,7 +125,7 @@ function separateNameAndClass(fileName) {
 }
 
 function getFolderName(fileLocation) {
-  const fileLocationArray = fileLocation.split('/');
+  const fileLocationArray = fileLocation.split(slash);
   const folderName = fileLocationArray.pop();
   return folderName;
 }
@@ -184,7 +185,7 @@ $(document).ready(() => {
       const filesWithMultiples = addMultiples(count, uniqueNameArray, countArray);
       const commaSeparatedClassArray = separateClassWithComma(filesWithMultiples);
       
-      const filePath = `${fileLocation}/${school}`;
+      const filePath = `${fileLocation}${slash}${school}`;
       const spreadsheetContent = createSpreadsheet(commaSeparatedClassArray);
       const folderName = getFolderName(fileLocation);
       const includeImageData = $('#imageData:checked').val();
