@@ -103,7 +103,8 @@ function createImageData(nameArray, groupArray, date, school) {
     const nameInformation = separateNameAndClass(nameArray[index]);
     const className = nameInformation[0];
     const nameOnly = nameInformation[1];
-    imageDataContent += `${name},${nameOnly},,${nameOnly},${groupArray[index]},${className},,${date},${school}\r\n`;
+    const group = groupArray[index];
+    imageDataContent += `${name},${nameOnly},,${nameOnly},${group},${className},,${date},${school}\r\n`;
   });
   return imageDataContent;
 }
