@@ -7,6 +7,8 @@ const { app, BrowserWindow, Menu, ipcMain } = electron;
 let win;
 let addWindow;
 
+process.env.NODE_ENV = 'production';
+
 app.on('ready', function() {
   win = new BrowserWindow({ width: 800, height: 500 });
   win.loadURL(url.format({
