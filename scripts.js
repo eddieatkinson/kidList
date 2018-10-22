@@ -164,7 +164,8 @@ $(document).ready(() => {
     }
     formContent.html(formHTML);
   });
-  $('#readFiles').click(() => {
+  $('.form').on('click', '#readFiles', (event) => {
+    event.preventDefault();
     dialog.showOpenDialog({ properties: [
         'openFile', 'multiSelections',
       ]}, (fileNames) => {
@@ -173,7 +174,8 @@ $(document).ready(() => {
           countArray = getCount(nameArray, uniqueNameArray);
         });
   });
-  $('#submit').click(() => {
+  $('.form').on('click', '#submit', (event) => {
+    event.preventDefault();
     const count = $('#count').val();
     const school = $('#school').val();
     const date = $('#date').val();
